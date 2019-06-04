@@ -15,6 +15,9 @@ namespace System.Text.Json.Serialization.Converters
     {
         public const string ImmutableNamespace = "System.Collections.Immutable";
 
+        private const string ImmutableArrayTypeName = "System.Collections.Immutable.ImmutableArray";
+        private const string ImmutableArrayGenericTypeName = "System.Collections.Immutable.ImmutableArray`1";
+
         private const string ImmutableListTypeName = "System.Collections.Immutable.ImmutableList";
         private const string ImmutableListGenericTypeName = "System.Collections.Immutable.ImmutableList`1";
         private const string ImmutableListGenericInterfaceTypeName = "System.Collections.Immutable.IImmutableList`1";
@@ -50,6 +53,8 @@ namespace System.Text.Json.Serialization.Converters
         {
             switch (immutableCollectionTypeName)
             {
+                case ImmutableArrayGenericTypeName:
+                    return ImmutableArrayTypeName;
                 case ImmutableListGenericTypeName:
                 case ImmutableListGenericInterfaceTypeName:
                     return ImmutableListTypeName;

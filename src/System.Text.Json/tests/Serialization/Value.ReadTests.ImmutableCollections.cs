@@ -12,6 +12,21 @@ namespace System.Text.Json.Serialization.Tests
     public static partial class ValueTests
     {
         [Fact]
+        public static void ReadPrimitiveImmutableArrayT()
+        {
+            ImmutableArray<int> result = JsonSerializer.Parse<ImmutableArray<int>>(Encoding.UTF8.GetBytes(@"[1,2]"));
+            int expected = 1;
+
+            foreach (int i in result)
+            {
+                Assert.Equal(expected++, i);
+            }
+
+            result = JsonSerializer.Parse<ImmutableArray<int>>(Encoding.UTF8.GetBytes(@"[]"));
+            Assert.Equal(0, result.Count());
+        }
+
+        [Fact]
         public static void ReadIImmutableListTOfIImmutableListT()
         {
             IImmutableList<IImmutableList<int>> result = JsonSerializer.Parse<IImmutableList<IImmutableList<int>>>(Encoding.UTF8.GetBytes(@"[[1,2],[3,4]]"));
