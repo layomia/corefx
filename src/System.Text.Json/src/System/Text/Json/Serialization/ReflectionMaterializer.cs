@@ -22,6 +22,19 @@ namespace System.Text.Json
             return () => Activator.CreateInstance(type);
         }
 
+        public override MethodWithICollectionParameterDelegate CreateParameterizedCreator(Type type, params Type[] parameters)
+        {
+            Debug.Assert(type != null && parameters != null);
+            ConstructorInfo realMethod = type.GetConstructor(parameters);
+
+            if (realMethod == null && !type.IsValueType)
+            {
+                return null;
+            }
+
+            return (parameters) => Activator.CreateInstance(type, parameters);
+        }
+
         public override object ImmutableCollectionCreateRange(Type constructingType, Type elementType)
         {
             MethodInfo createRange = ImmutableCollectionCreateRangeMethod(constructingType, elementType);
@@ -32,7 +45,7 @@ namespace System.Text.Json
             }
 
             return createRange.CreateDelegate(
-                typeof(JsonSerializerOptions.ImmutableCreateRangeDelegate<>).MakeGenericType(elementType), null);
+                typeof(MethodWithGenericIEnumerableParameterDelegate<>).MakeGenericType(elementType), null);
         }
 
         public override object ImmutableDictionaryCreateRange(Type constructingType, Type elementType)
@@ -45,7 +58,7 @@ namespace System.Text.Json
             }
 
             return createRange.CreateDelegate(
-                typeof(JsonSerializerOptions.ImmutableDictCreateRangeDelegate<,>).MakeGenericType(typeof(string), elementType), null);
+                typeof(MethodWithGenericIEnumerableOfKeyValuePairParameterDelegate<,>).MakeGenericType(typeof(string), elementType), null);
         }
     }
 }

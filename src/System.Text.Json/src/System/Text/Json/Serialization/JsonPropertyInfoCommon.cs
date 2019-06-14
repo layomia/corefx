@@ -107,6 +107,58 @@ namespace System.Text.Json
             return parentType;
         }
 
+        public override IEnumerable CreateIEnumerableInstanceFromList(Type enumerableType, IList sourceList, string jsonPath, JsonSerializerOptions options)
+        {
+            if (!options.TryGetParameterizedCreatorDelegate(enumerableType, out ClassMaterializer.MethodWithICollectionParameterDelegate creatorDelegate))
+            {
+                Type argumentType;
+                if (enumerableType.IsGenericType)
+                {
+                    argumentType = typeof(IEnumerable<TRuntimeProperty>);
+                }
+                else
+                {
+                    argumentType = typeof(ICollection);
+                }
+
+                creatorDelegate = options.ClassMaterializerStrategy.CreateParameterizedCreator(enumerableType, argumentType);
+
+                if (creatorDelegate == null)
+                {
+                    ThrowHelper.ThrowJsonException_DeserializeUnableToConvertValue(enumerableType, jsonPath);
+                }
+
+                options.TryAddParameterizedCreatorDelegate(enumerableType, creatorDelegate);
+            }
+
+            if (enumerableType.IsGenericType)
+            {
+                return (IEnumerable)creatorDelegate.Invoke(CreateGenericIEnumerableFromList(sourceList));
+            }
+
+            return (IEnumerable)creatorDelegate.Invoke(sourceList);
+        }
+
+        public override IDictionary CreateIDictionaryInstanceFromDictionary(Type dictionaryType, IDictionary sourceDictionary, string jsonPath, JsonSerializerOptions options)
+        {
+            // We don't support any generic dictionaries with this mechanism.
+            Debug.Assert(!dictionaryType.IsGenericType);
+
+            if (!options.TryGetParameterizedCreatorDelegate(dictionaryType, out ClassMaterializer.MethodWithICollectionParameterDelegate creatorDelegate))
+            {
+                creatorDelegate = options.ClassMaterializerStrategy.CreateParameterizedCreator(dictionaryType, typeof(IDictionary));
+
+                if (creatorDelegate == null)
+                {
+                    ThrowHelper.ThrowJsonException_DeserializeUnableToConvertValue(dictionaryType, jsonPath);
+                }
+
+                options.TryAddParameterizedCreatorDelegate(dictionaryType, creatorDelegate);
+            }
+
+            return (IDictionary)creatorDelegate.Invoke(sourceDictionary);
+        }
+
         // Creates an IEnumerable<TRuntimePropertyType> and populates it with the items in the
         // sourceList argument then uses the delegateKey argument to identify the appropriate cached
         // CreateRange<TRuntimePropertyType> method to create and return the desired immutable collection type.
@@ -117,8 +169,8 @@ namespace System.Text.Json
                 ThrowHelper.ThrowJsonException_DeserializeUnableToConvertValue(collectionType, jsonPath);
             }
 
-            JsonSerializerOptions.ImmutableCreateRangeDelegate<TRuntimeProperty> createRangeDelegate = (
-                (JsonSerializerOptions.ImmutableCreateRangeDelegate<TRuntimeProperty>)createRangeDelegateObj);
+            ClassMaterializer.MethodWithGenericIEnumerableParameterDelegate<TRuntimeProperty> createRangeDelegate = (
+                (ClassMaterializer.MethodWithGenericIEnumerableParameterDelegate<TRuntimeProperty>)createRangeDelegateObj);
 
             return (IEnumerable)createRangeDelegate.Invoke(CreateGenericIEnumerableFromList(sourceList));
         }
@@ -133,15 +185,15 @@ namespace System.Text.Json
                 ThrowHelper.ThrowJsonException_DeserializeUnableToConvertValue(collectionType, jsonPath);
             }
 
-            JsonSerializerOptions.ImmutableDictCreateRangeDelegate<string, TRuntimeProperty> createRangeDelegate = (
-                (JsonSerializerOptions.ImmutableDictCreateRangeDelegate<string, TRuntimeProperty>)createRangeDelegateObj);
+            ClassMaterializer.MethodWithGenericIEnumerableOfKeyValuePairParameterDelegate<string, TRuntimeProperty> createRangeDelegate = (
+                (ClassMaterializer.MethodWithGenericIEnumerableOfKeyValuePairParameterDelegate<string, TRuntimeProperty>)createRangeDelegateObj);
 
             return (IDictionary)createRangeDelegate.Invoke(CreateGenericIEnumerableFromDictionary(sourceDictionary));
         }
 
         public override IEnumerable CreateIEnumerableConstructibleType(Type enumerableType, IList sourceList)
         {
-            return (IEnumerable)Activator.CreateInstance(enumerableType, CreateGenericIEnumerableFromList(sourceList));
+            return (IEnumerable) Activator.CreateInstance(enumerableType, CreateGenericIEnumerableFromList(sourceList));
         }
 
         public override ValueType CreateKeyValuePairFromDictionary(ref ReadStack state, IDictionary sourceDictionary, JsonSerializerOptions options)

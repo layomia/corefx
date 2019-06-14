@@ -241,6 +241,7 @@ namespace System.Text.Json
                     else if (typeof(IEnumerable).IsAssignableFrom(RuntimePropertyType))
                     {
                         if (JsonClassInfo.IsDeserializedByConstructingWithIList(RuntimePropertyType))
+                            //|| (!typeof(IList).IsAssignableFrom(RuntimePropertyType) && JsonClassInfo.HasConstructorThatTakesGenericIEnumerable(RuntimePropertyType)))
                         {
                             EnumerableConverter = s_jsonICollectionConverter;
                         }
@@ -306,6 +307,10 @@ namespace System.Text.Json
         {
             return (TAttribute)propertyInfo?.GetCustomAttribute(typeof(TAttribute), inherit: false);
         }
+
+        public abstract IEnumerable CreateIEnumerableInstanceFromList(Type enumerableType, IList sourceList, string jsonPath, JsonSerializerOptions options);
+
+        public abstract IDictionary CreateIDictionaryInstanceFromDictionary(Type dictionaryType, IDictionary sourceDictionary, string jsonPath, JsonSerializerOptions options);
 
         public abstract IEnumerable CreateImmutableCollectionFromList(Type collectionType, string delegateKey, IList sourceList, string propertyPath, JsonSerializerOptions options);
 

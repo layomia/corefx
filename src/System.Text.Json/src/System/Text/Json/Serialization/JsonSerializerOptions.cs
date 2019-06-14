@@ -20,7 +20,10 @@ namespace System.Text.Json
 
         private readonly ConcurrentDictionary<Type, JsonClassInfo> _classes = new ConcurrentDictionary<Type, JsonClassInfo>();
         private readonly ConcurrentDictionary<Type, JsonPropertyInfo> _objectJsonProperties = new ConcurrentDictionary<Type, JsonPropertyInfo>();
-        private static ConcurrentDictionary<string, object> s_createRangeDelegates = new ConcurrentDictionary<string, object>();
+        private readonly ConcurrentDictionary<string, object> _createRangeDelegates = new ConcurrentDictionary<string, object>();
+        private readonly ConcurrentDictionary<Type, ClassMaterializer.MethodWithICollectionParameterDelegate> _parameterizedCreatorDelegates = (
+            new ConcurrentDictionary<Type, ClassMaterializer.MethodWithICollectionParameterDelegate>());
+
         private ClassMaterializer _classMaterializerStrategy;
         private JsonNamingPolicy _dictionayKeyPolicy;
         private JsonNamingPolicy _jsonPropertyNamingPolicy;
@@ -308,9 +311,6 @@ namespace System.Text.Json
             };
         }
 
-        internal delegate object ImmutableCreateRangeDelegate<T>(IEnumerable<T> items);
-        internal delegate object ImmutableDictCreateRangeDelegate<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> items);
-
         internal JsonPropertyInfo GetJsonPropertyInfoFromClassInfo(JsonClassInfo classInfo, JsonSerializerOptions options)
         {
             if (classInfo.ClassType == ClassType.KeyValuePair)
@@ -336,19 +336,28 @@ namespace System.Text.Json
 
         internal bool CreateRangeDelegatesContainsKey(string key)
         {
-            return s_createRangeDelegates.ContainsKey(key);
+            return _createRangeDelegates.ContainsKey(key);
         }
 
         internal bool TryGetCreateRangeDelegate(string delegateKey, out object createRangeDelegate)
         {
-            return s_createRangeDelegates.TryGetValue(delegateKey, out createRangeDelegate) && createRangeDelegate != null;
+            return _createRangeDelegates.TryGetValue(delegateKey, out createRangeDelegate) && createRangeDelegate != null;
         }
 
         internal bool TryAddCreateRangeDelegate(string key, object createRangeDelegate)
         {
-            return s_createRangeDelegates.TryAdd(key, createRangeDelegate);
+            return _createRangeDelegates.TryAdd(key, createRangeDelegate);
         }
 
+        internal bool TryGetParameterizedCreatorDelegate(Type type, out ClassMaterializer.MethodWithICollectionParameterDelegate creatorDelegate)
+        {
+            return _parameterizedCreatorDelegates.TryGetValue(type, out creatorDelegate);
+        }
+
+        internal bool TryAddParameterizedCreatorDelegate(Type type, ClassMaterializer.MethodWithICollectionParameterDelegate creatorDelegate)
+        {
+            return _parameterizedCreatorDelegates.TryAdd(type, creatorDelegate);
+        }
 
         private void VerifyMutable()
         {
