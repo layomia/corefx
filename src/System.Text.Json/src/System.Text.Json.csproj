@@ -77,6 +77,7 @@
     <Compile Include="System\Text\Json\Serialization\Converters\JsonValueConverterUInt16.cs" />
     <Compile Include="System\Text\Json\Serialization\Converters\JsonValueConverterUInt32.cs" />
     <Compile Include="System\Text\Json\Serialization\Converters\JsonValueConverterUInt64.cs" />
+    <Compile Include="System\Text\Json\Serialization\Converters\JsonValueConverterUri.cs" />
     <Compile Include="System\Text\Json\Serialization\JsonAttribute.cs" />
     <Compile Include="System\Text\Json\Serialization\JsonCamelCaseNamePolicy.cs" />
     <Compile Include="System\Text\Json\Serialization\JsonClassInfo.cs" />
@@ -167,6 +168,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.ValueTuple" />
     <Reference Include="System.Numerics.Vectors" />
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetsNETStandard)' != 'true' AND '$(TargetsNetFx)' != 'true'">
     <Reference Include="System.Collections" />
