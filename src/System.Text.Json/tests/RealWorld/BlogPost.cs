@@ -5,9 +5,36 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json.Serialization;
+using Xunit;
 
 namespace System.Text.Json.Tests.RealWorld
 {
+    public class BlogPostTest : RealWorldTest
+    {
+        public override void Initialize()
+        {
+        // This payload was obtained from https://medium.com/@fagnerbrack/a-smart-programmer-understands-the-problems-worth-fixing-dcf15871f943?format=json.
+            PayloadAsString = File.ReadAllText("Resources/Payloads/BlogPost.json");
+        }
+
+        public override void VerifySerializer()
+        {
+            JsonSerializerOptions options = new JsonSerializerOptions
+            {
+                IgnoreNullValues = true
+            };
+
+            Post post = JsonSerializer.Parse<Post>(PayloadAsString, options);
+            Assert.NotNull(post);
+        }
+
+        public override void VerifyDocument() { }
+
+        public override void VerifyReader() { }
+
+        public override void VerifyWriter() { }
+    }
+
     public partial class Post
     {
         [JsonPropertyName("value")]
@@ -819,23 +846,5 @@ namespace System.Text.Json.Tests.RealWorld
 
         [JsonPropertyName("audioProgressSec")]
         public long AudioProgressSec { get; set; }
-    }
-
-    public class BlogPostTest : RealWorldTest
-    {
-        public override void Initialize()
-        {
-            
-        }
-
-        public override void VerifySerializer()
-        {
-            var options = new JsonSerializerOptions();
-            options.IgnoreNullValues = true;
-
-            Post post = JsonSerializer.Parse<Post>(PayloadAsString());
-        }
-
-        public override string PayloadAsString => File.ReadAllText("BlogPost.json");
     }
 }

@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Serialization.Tests;
+﻿
+using System.Collections.Generic;
+using System.Text.Json.Serialization.Tests;
 using Xunit;
 
 namespace System.Text.Json.Tests.RealWorld
@@ -18,7 +20,7 @@ namespace System.Text.Json.Tests.RealWorld
             VerifyWriter();
         }
 
-        public virtual string PayloadAsString => throw new NotImplementedException();
+        public string PayloadAsString = null;
 
         public byte[] PayloadAsUtf8Bytes => Encoding.UTF8.GetBytes(PayloadAsString);
 
@@ -41,11 +43,24 @@ namespace System.Text.Json.Tests.RealWorld
         {
             throw new NotImplementedException();
         }
+    }
 
-        [Fact]
-        public void TestRealWorldUseCases()
+    public static class RealWorldTests
+    {
+        public static IEnumerable<object[]> TestData
         {
+            get
+            {
+                yield return new object[] { new BlogPostTest() };
+            }
+        }
 
+        [Theory]
+        [MemberData(nameof(TestData))]
+        public static void TestRealWorldUseCases(RealWorldTest test)
+        {
+            test.Initialize();
+            test.Verify();
         }
     }
 }
