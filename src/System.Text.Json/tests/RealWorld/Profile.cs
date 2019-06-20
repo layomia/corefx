@@ -25,6 +25,8 @@ namespace System.Text.Json.Tests.RealWorld.Profile
                 WriteIndented = true,
             };
 
+            options.Converters.Add(new JsonStringEnumConverter());
+
             Profile post = JsonSerializer.Parse<Profile>(PayloadAsString, options);
 
             // TODO: drill into data to verify properties.
@@ -137,7 +139,7 @@ namespace System.Text.Json.Tests.RealWorld.Profile
         public PromotionStatus PromotionStatus { get; set; }
 
         [JsonPropertyName("status_type")]
-        public StatusType? StatusType { get; set; }
+        public StatusType StatusType { get; set; }
 
         [JsonPropertyName("timeline_visibility")]
         public TimelineVisibility TimelineVisibility { get; set; }
