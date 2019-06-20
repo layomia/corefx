@@ -31,6 +31,7 @@
     <Compile Include="NewtonsoftTests\ImmutableCollectionsTests.cs" />
     <Compile Include="NewtonsoftTests\JsonSerializerTests.cs" />
     <Compile Include="RealWorld\BlogPost.cs" />
+    <Compile Include="RealWorld\Profile.cs" />
     <Compile Include="RealWorld\RealWorldTest.cs" />
     <Compile Include="Serialization\Array.ReadTests.cs" />
     <Compile Include="Serialization\Array.WriteTests.cs" />
@@ -90,6 +91,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\Payloads\BlogPost.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Resources\Payloads\Profile.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="$(NewtonsoftJsonPackageVersion)" />

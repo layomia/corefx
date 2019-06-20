@@ -7,25 +7,31 @@ using System.IO;
 using System.Text.Json.Serialization;
 using Xunit;
 
-namespace System.Text.Json.Tests.RealWorld
+namespace System.Text.Json.Tests.RealWorld.BlogPost
 {
-    public class BlogPostTest : RealWorldTest
+    public class Test : RealWorldTest
     {
         public override void Initialize()
         {
-        // This payload was obtained from https://medium.com/@fagnerbrack/a-smart-programmer-understands-the-problems-worth-fixing-dcf15871f943?format=json.
-            PayloadAsString = File.ReadAllText("Resources/Payloads/BlogPost.json");
+            // This payload was obtained from https://medium.com/@fagnerbrack/a-smart-programmer-understands-the-problems-worth-fixing-dcf15871f943?format=json.
+            PayloadAsString = File.ReadAllText("Resources/Payloads/BlogPost.json").StripWhitespace();
         }
 
         public override void VerifySerializer()
         {
             JsonSerializerOptions options = new JsonSerializerOptions
             {
-                IgnoreNullValues = true
+                IgnoreNullValues = true,
+                WriteIndented = true,
             };
 
             Post post = JsonSerializer.Parse<Post>(PayloadAsString, options);
+
+            // TODO: drill into data to verify properties.
             Assert.NotNull(post);
+
+            // TDOD: compare to initial payload after Uri support is checked in.
+            Assert.NotNull(JsonSerializer.ToString(post, options));
         }
 
         public override void VerifyDocument() { }
@@ -35,7 +41,7 @@ namespace System.Text.Json.Tests.RealWorld
         public override void VerifyWriter() { }
     }
 
-    public partial class Post
+    public class Post
     {
         [JsonPropertyName("value")]
         public Value Value { get; set; }
@@ -59,7 +65,7 @@ namespace System.Text.Json.Tests.RealWorld
         public References References { get; set; }
     }
 
-    public partial class Collaborator
+    public class Collaborator
     {
         [JsonPropertyName("user")]
         public MentionedUser User { get; set; }
@@ -68,7 +74,7 @@ namespace System.Text.Json.Tests.RealWorld
         public string State { get; set; }
     }
 
-    public partial class MentionedUser
+    public class MentionedUser
     {
         [JsonPropertyName("userId")]
         public string UserId { get; set; }
@@ -122,7 +128,7 @@ namespace System.Text.Json.Tests.RealWorld
         public Social Social { get; set; }
     }
 
-    public partial class Social
+    public class Social
     {
         [JsonPropertyName("userId")]
         public string UserId { get; set; }
@@ -134,7 +140,7 @@ namespace System.Text.Json.Tests.RealWorld
         public string Type { get; set; }
     }
 
-    public partial class SocialStats
+    public class SocialStats
     {
         [JsonPropertyName("userId")]
         public string UserId { get; set; }
@@ -149,7 +155,7 @@ namespace System.Text.Json.Tests.RealWorld
         public string Type { get; set; }
     }
 
-    public partial class CollectionUserRelation
+    public class CollectionUserRelation
     {
         [JsonPropertyName("collectionId")]
         public string CollectionId { get; set; }
@@ -161,7 +167,7 @@ namespace System.Text.Json.Tests.RealWorld
         public string Role { get; set; }
     }
 
-    public partial class References
+    public class References
     {
         [JsonPropertyName("User")]
         public User User { get; set; }
@@ -173,25 +179,25 @@ namespace System.Text.Json.Tests.RealWorld
         public SocialStatsClass SocialStats { get; set; }
     }
 
-    public partial class SocialClass
+    public class SocialClass
     {
         [JsonPropertyName("7ef192b7f545")]
         public Social The7Ef192B7F545 { get; set; }
     }
 
-    public partial class SocialStatsClass
+    public class SocialStatsClass
     {
         [JsonPropertyName("7ef192b7f545")]
         public SocialStats The7Ef192B7F545 { get; set; }
     }
 
-    public partial class User
+    public class User
     {
         [JsonPropertyName("7ef192b7f545")]
         public MentionedUser The7Ef192B7F545 { get; set; }
     }
 
-    public partial class Value
+    public class Value
     {
         [JsonPropertyName("id")]
         public string Id { get; set; }
@@ -413,7 +419,7 @@ namespace System.Text.Json.Tests.RealWorld
         public string Type { get; set; }
     }
 
-    public partial class Content
+    public class Content
     {
         [JsonPropertyName("subtitle")]
         public string Subtitle { get; set; }
@@ -425,7 +431,7 @@ namespace System.Text.Json.Tests.RealWorld
         public PostDisplay PostDisplay { get; set; }
     }
 
-    public partial class ContentBodyModel
+    public class ContentBodyModel
     {
         [JsonPropertyName("paragraphs")]
         public List<PurpleParagraph> Paragraphs { get; set; }
@@ -434,7 +440,7 @@ namespace System.Text.Json.Tests.RealWorld
         public List<PurpleSection> Sections { get; set; }
     }
 
-    public partial class PurpleParagraph
+    public class PurpleParagraph
     {
         [JsonPropertyName("name")]
         public string Name { get; set; }
@@ -455,7 +461,7 @@ namespace System.Text.Json.Tests.RealWorld
         public Image Metadata { get; set; }
     }
 
-    public partial class Markup
+    public class Markup
     {
         [JsonPropertyName("type")]
         public long Type { get; set; }
@@ -482,7 +488,7 @@ namespace System.Text.Json.Tests.RealWorld
         public string UserId { get; set; }
     }
 
-    public partial class Image
+    public class Image
     {
         [JsonPropertyName("id")]
         public string Id { get; set; }
@@ -497,7 +503,7 @@ namespace System.Text.Json.Tests.RealWorld
         public bool? IsFeatured { get; set; }
     }
 
-    public partial class PurpleSection
+    public class PurpleSection
     {
         [JsonPropertyName("name")]
         public string Name { get; set; }
@@ -506,13 +512,13 @@ namespace System.Text.Json.Tests.RealWorld
         public long StartIndex { get; set; }
     }
 
-    public partial class PostDisplay
+    public class PostDisplay
     {
         [JsonPropertyName("coverless")]
         public bool Coverless { get; set; }
     }
 
-    public partial class PreviewContent
+    public class PreviewContent
     {
         [JsonPropertyName("bodyModel")]
         public PreviewContentBodyModel BodyModel { get; set; }
@@ -524,7 +530,7 @@ namespace System.Text.Json.Tests.RealWorld
         public string Subtitle { get; set; }
     }
 
-    public partial class PreviewContentBodyModel
+    public class PreviewContentBodyModel
     {
         [JsonPropertyName("paragraphs")]
         public List<FluffyParagraph> Paragraphs { get; set; }
@@ -533,7 +539,7 @@ namespace System.Text.Json.Tests.RealWorld
         public List<FluffySection> Sections { get; set; }
     }
 
-    public partial class FluffyParagraph
+    public class FluffyParagraph
     {
         [JsonPropertyName("name")]
         public string Name { get; set; }
@@ -557,13 +563,13 @@ namespace System.Text.Json.Tests.RealWorld
         public long? Alignment { get; set; }
     }
 
-    public partial class FluffySection
+    public class FluffySection
     {
         [JsonPropertyName("startIndex")]
         public long StartIndex { get; set; }
     }
 
-    public partial class Topic
+    public class Topic
     {
         [JsonPropertyName("topicId")]
         public string TopicId { get; set; }
@@ -602,7 +608,7 @@ namespace System.Text.Json.Tests.RealWorld
         public string Type { get; set; }
     }
 
-    public partial class Virtuals
+    public class Virtuals
     {
         [JsonPropertyName("allowNotes")]
         public bool AllowNotes { get; set; }
@@ -668,7 +674,7 @@ namespace System.Text.Json.Tests.RealWorld
         public List<Topic> Topics { get; set; }
     }
 
-    public partial class Links
+    public class Links
     {
         [JsonPropertyName("entries")]
         public List<Entry> Entries { get; set; }
@@ -680,7 +686,7 @@ namespace System.Text.Json.Tests.RealWorld
         public long GeneratedAt { get; set; }
     }
 
-    public partial class Entry
+    public class Entry
     {
         [JsonPropertyName("url")]
         public Uri Url { get; set; }
@@ -692,7 +698,7 @@ namespace System.Text.Json.Tests.RealWorld
         public long HttpStatus { get; set; }
     }
 
-    public partial class Alt
+    public class Alt
     {
         [JsonPropertyName("type")]
         public long Type { get; set; }
@@ -701,7 +707,7 @@ namespace System.Text.Json.Tests.RealWorld
         public string Url { get; set; }
     }
 
-    public partial class PreviewImage
+    public class PreviewImage
     {
         [JsonPropertyName("imageId")]
         public string ImageId { get; set; }
@@ -728,7 +734,7 @@ namespace System.Text.Json.Tests.RealWorld
         public long Width { get; set; }
     }
 
-    public partial class Tag
+    public class Tag
     {
         [JsonPropertyName("slug")]
         public string Slug { get; set; }
@@ -746,7 +752,7 @@ namespace System.Text.Json.Tests.RealWorld
         public string Type { get; set; }
     }
 
-    public partial class Metadata
+    public class Metadata
     {
         [JsonPropertyName("postCount")]
         public long PostCount { get; set; }
@@ -755,7 +761,7 @@ namespace System.Text.Json.Tests.RealWorld
         public CoverImage CoverImage { get; set; }
     }
 
-    public partial class CoverImage
+    public class CoverImage
     {
         [JsonPropertyName("id")]
         public string Id { get; set; }
@@ -779,7 +785,7 @@ namespace System.Text.Json.Tests.RealWorld
         public long? FocusPercentY { get; set; }
     }
 
-    public partial class UserPostRelation
+    public class UserPostRelation
     {
         [JsonPropertyName("userId")]
         public string UserId { get; set; }

@@ -51,7 +51,8 @@ namespace System.Text.Json.Tests.RealWorld
         {
             get
             {
-                yield return new object[] { new BlogPostTest() };
+                yield return new object[] { new BlogPost.Test() };
+                yield return new object[] { new Profile.Test() };
             }
         }
 
