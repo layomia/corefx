@@ -325,11 +325,30 @@ namespace System.Text.Json.Tests.RealWorld.Profile
         public long Width { get; set; }
     }
 
-    public enum TypeEnum { Photo, Share, StreamPublish, VideoAutoplay };
+    public enum TypeEnum
+    {
+        Photo = 0,
+        Share = 1,
+        StreamPublish = 2,
+        VideoAutoplay = 3
+    };
 
-    public enum PromotionStatus { Ineligible };
+    public enum PromotionStatus
+    {
+        Ineligible = 0,
+    };
 
-    public enum StatusType { AddedPhotos, MobileStatusUpdate, PublishedStory, SharedStory };
+    public enum StatusType
+    {
+        AddedPhotos = 0,
+        MobileStatusUpdate = 1,
+        PublishedStory = 2,
+        SharedStory = 3,
+    };
 
-    public enum TimelineVisibility { NoTimelineUnitForThisPost, Normal };
+    public enum TimelineVisibility
+    {
+        NoTimelineUnitForThisPost = 0,
+        Normal = 1,
+    };
 }
